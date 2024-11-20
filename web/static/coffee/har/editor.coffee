@@ -26,23 +26,32 @@ define (require, exports, module) ->
       sel.addRange(range)
   )
 
-  $(() ->
-    $('[data-toggle=get-cookie][disabled]').attr('disabled', false)
-  )
+  # $(() ->
+  #   if $('body').attr('get-cookie') == 'true'
+  #     $('[data-toggle=get-cookie][disabled]').attr('disabled', false)
+  #   return
+  # )
 
   # get cookie helper
   cookie_input = null
   $(document).on('click', "[data-toggle=get-cookie]", (ev) ->
     $this = $(this)
-    if $this.attr('disabled')
-      return
+    # if $this.attr('disabled')
+    #   return
     cookie_input = angular.element($this.parent().find('input'))
 
-    if $('body').attr('get-cookie') is undefined
-      console.log('尚未安装GetCookie插件，请安装插件或手动获取！')
-      # $this.attr('href', 'https://chrome.google.com/webstore/detail/cookies-get-assistant/ljjpkibacifkfolehlgaolibbnlapkme').attr('target', '_blank')
+    if $('body').attr('get-cookie') != 'true'
+      # $this.html('没有插件，详情F12')
+      # console.log('如需要插件请访问 https://github.com/qd-today/get-cookies/ 下载并手动安装插件')
+      if $this.attr('getmod') == 1
+        $this.attr('href', 'https://github.com/qd-today/get-cookies/')
+        .attr('target', '_blank').html('安装插件后请刷新')
+      else
+        $this.attr('getmod', 1)
+        .html('再次点击前往安装 Get-Cookies 插件')
       return
   )
+  # deepcode ignore InsufficientPostmessageValidation: the event.origin is checked
   window.addEventListener("message", (ev) ->
     if event.origin != window.location.origin
       return
@@ -52,7 +61,7 @@ define (require, exports, module) ->
     for key, value of cookie
       cookie_str += key + '=' + value + '; '
     if cookie_str == ''
-      console.log('没有获得cookie，您是否已经登录？')
+      console.log('没有获得cookie, 您是否已经登录?')
       return
     cookie_input?.val(cookie_str)
     cookie_input?.scope().$parent.var.value = cookie_str
